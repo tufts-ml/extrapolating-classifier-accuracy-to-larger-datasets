@@ -6,7 +6,7 @@
 
 ## ChestMNIST
 
-1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) into a folder named `ChestXray-NIHCC`.
+1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) and `Data_Entry_2017_v2020.csv` into a folder named `ChestXray-NIHCC`.
 2. Run `encode_ChestXray-NIHCC.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
@@ -14,6 +14,7 @@
    ```
    └── user
        └── ChestXray-NIHCC
+           ├── Data_Entry_2017_v2020.csv
            ├── 00000001_000.png
            ├── 00000001_001.png
            ├── 00000001_002.png
