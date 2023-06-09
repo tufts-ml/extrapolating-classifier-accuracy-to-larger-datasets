@@ -7,7 +7,7 @@
 ## ChestMNIST
 
 1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) into a folder named `ChestXray-NIHCC`.
-2. Run `encode-chestxray-nihcc.py --directory='{path_to_dataset}'`.
+2. Run `encode_chestxray_nihcc.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
@@ -22,7 +22,7 @@
            └── ...
    ```
 
-   run `encode-chestxray-nihcc.py --directory='/Users/user/'`.
+   run `encode_chestxray_nihcc.py --directory='/Users/user/'`.
    
 ## PneumoniaMNIST
 
@@ -38,7 +38,7 @@
            └── train
    ```
 
-   run `encode-chest-xray.py --directory='/Users/user/'`.
+   run `encode_chest_xray.py --directory='/Users/user/'`.
 
 ## BrestMNIST
 
