@@ -7,7 +7,7 @@
 ## ChestMNIST
 
 1. Download and econde ChestMNIST with `encode_ChestXray-NIHCC.py`
-2. Run `encode_ChestXray-NIHCC.py --directory='{path_to_dataset}'`.
+2. Run `create_csv_ChestXray-NIHCC.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
