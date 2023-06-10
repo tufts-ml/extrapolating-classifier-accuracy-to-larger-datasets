@@ -25,7 +25,7 @@
 
    run `encode_ChestX-ray8.py --directory='/Users/user/'`.
    
-## PneumoniaMNIST
+## Chest X-Ray
 
 1. Download [ChestXRay2017.zip](https://data.mendeley.com/datasets/rscbjbr9sj/2) into a folder named `Chest X-Ray`.
 2. Run `encode_Chest_X-Ray.py --directory='{path_to_dataset}'`.
