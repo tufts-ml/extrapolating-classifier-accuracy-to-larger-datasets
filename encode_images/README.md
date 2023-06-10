@@ -1,7 +1,7 @@
 ## Table of Contents
 
 - [ChestX-ray8](#chestx-ray8)
-- [Chest X-Ray](#chest-x-ray)
+- [Chest X-Ray](#chest x-ray)
 - [Breast Ultrasound Dataset](#breast-ultrasound-dataset)
 
 ## ChestX-ray8
