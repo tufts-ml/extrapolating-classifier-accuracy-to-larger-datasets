@@ -7,7 +7,7 @@
 ## ChestX-ray8
 
 1. Download and encode ChestX-ray8 with `encode_ChestX-ray8.py`
-2. Run `create_csv_ChestX-ray8.py --directory='{path_to_dataset}'`.
+2. Run `label_ChestX-ray8.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
@@ -23,12 +23,12 @@
            └── Data_Entry_2017_v2020.csv
    ```
 
-   run `encode_ChestX-ray8.py --directory='/Users/user/encoded_ChestX-ray8'`.
+   run `label_ChestX-ray8.py --directory='/Users/user/encoded_ChestX-ray8'`.
 
 ## Chest X-Ray
 
 1. Download and encode Chest X-Ray with `encode_Chest_X-Ray.py`.
-2. Run `create_csv_Chest_X-Ray.py --directory='{path_to_dataset}'`.
+2. Run `label_Chest_X-Ray.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
@@ -39,12 +39,12 @@
            └── train
    ```
 
-   run `encode_Chest_X-Ray.py --directory='/Users/user/encoded_chest_xray'`.
+   run `label_Chest_X-Ray.py --directory='/Users/user/encoded_chest_xray'`.
 
 ## Breast Ultrasound Dataset
 
-1. Download and encode Breast_Ultrasound_Dataset with `encode_Breast_Ultrasound_Dataset.py`.
-2. Run `create_csv_Breast_Ultrasound_Dataset.py --directory='{path_to_dataset}'`.
+1. Download and encode Breast Ultrasound Dataset with `encode_Breast_Ultrasound_Dataset.py`.
+2. Run `label_Breast_Ultrasound_Dataset.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
@@ -56,5 +56,5 @@
            └── normal
    ```
 
-   run `encode_Breast_Ultrasound_Dataset.py --directory='/Users/user/encoded_Breast_Ultrasound_Dataset'`.
+   run `label_Breast_Ultrasound_Dataset.py --directory='/Users/user/encoded_Breast_Ultrasound_Dataset'`.
    
