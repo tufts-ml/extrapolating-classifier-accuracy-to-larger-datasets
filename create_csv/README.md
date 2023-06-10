@@ -1,60 +1,60 @@
 ## Table of Contents
 
-- [ChestMNIST](#chestmnist)
-- [PneumoniaMNIST](#pneumoniamnist)
-- [BrestMNIST](#brestmnist)
+- [ChestX-ray8](#chestx-ray8)
+- [Chest X-Ray](#chest-x-ray)
+- [Breast Ultrasound Dataset](#breast-ultrasound-dataset)
 
-## ChestMNIST
+## ChestX-ray8
 
-1. Download and econde ChestMNIST with `encode_ChestXray-NIHCC.py`
-2. Run `create_csv_ChestXray-NIHCC.py --directory='{path_to_dataset}'`.
+1. Download and econde ChestX-ray8 with `encode_ChestX-ray8.py`
+2. Run `create_csv_ChestX-ray8.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── encoded_ChestXray-NIHCC
-           ├── Data_Entry_2017_v2020.csv
+       └── encoded_ChestX-ray8
            ├── 00000001_000.png
            ├── 00000001_001.png
-           ├── 00000001_002.png
            ├── ...
            ├── ...
-           └── ...
+           ├── ...
+           ├── 00030805_000.png
+           └── Data_Entry_2017_v2020.csv
    ```
 
-   run `encode_ChestXray-NIHCC.py --directory='/Users/user/encoded_ChestXray-NIHCC/'`.
+   run `encode_ChestX-ray8.py --directory='/Users/user/encoded_ChestX-ray8/'`.
 
-## PneumoniaMNIST
+## Chest X-Ray
 
-1. Download and econde PneumoniaMNIST with `encode_chest_xray.py`.
-2. Run `create_csv_chest_xray.py --directory='{path_to_dataset}'`.
+1. Download and econde Chest X-Ray with `encode_Chest_X-Ray.py`.
+2. Run `create_csv_Chest_X-Ray.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── encoded_chest_xray
+       └── encoded_Chest_X-Ray
            ├── test
            └── train
    ```
 
-   run `encode_chest_xray.py --directory='/Users/user/encoded_chest_xray/'`.
+   run `encode_Chest_X-Ray.py --directory='/Users/user/encoded_chest_xray/'`.
 
-## BrestMNIST
+## Breast Ultrasound Dataset
 
-1. Download and econde BrestMNIST with `create_csv_Dataset_BUSI_with_GT.py`.
-2. Run `create_csv_Dataset_BUSI_with_GT.py --directory='{path_to_dataset}'`.
+1. Download and econde Breast_Ultrasound_Dataset with `encode_Breast_Ultrasound_Dataset.py`.
+2. Run `create_csv_Breast_Ultrasound_Dataset.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── encoded_Dataset_BUSI_with_GT
+       └── encoded_Breast_Ultrasound_Dataset
            ├── benign
            ├── malignant
            └── normal
    ```
 
-   run `encode_Dataset_BUSI_with_GT.py --directory='/Users/user/encoded_Dataset_BUSI_with_GT/'`.
+   run `encode_Breast_Ultrasound_Dataset.py --directory='/Users/user/encoded_Breast_Ultrasound_Dataset/'`.
    
