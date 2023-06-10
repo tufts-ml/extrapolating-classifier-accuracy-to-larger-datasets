@@ -6,7 +6,7 @@
 
 ## ChestX-ray8
 
-1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) and `Data_Entry_2017_v2020.csv` into a folder named `ChestX-ray8`.
+1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) and [Data_Entry_2017_v2020.csv](https://nihcc.app.box.com/v/ChestXray-NIHCC) into a folder named `ChestX-ray8`.
 2. Run `encode_ChestX-ray8.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
