@@ -23,7 +23,7 @@
            └── Data_Entry_2017_v2020.csv
    ```
 
-   run `encode_ChestX-ray8.py --directory='/Users/user/'`.
+   run `encode_ChestX-ray8.py --directory='/Users/user/ChestX-ray8'`.
    
 ## Chest X-Ray
 
@@ -39,7 +39,7 @@
            └── train
    ```
 
-   run `encode_Chest_X-Ray.py --directory='/Users/user/'`.
+   run `encode_Chest_X-Ray.py --directory='/Users/user/Chest_X-Ray'`.
 
 ## Breast Ultrasound Dataset
 
@@ -56,5 +56,4 @@
            └── normal
    ```
 
-   run `encode_Breast_Ultrasound_Dataset.py --directory='/Users/user/'`.
-   
+   run `encode_Breast_Ultrasound_Dataset.py --directory='/Users/user/Breast_Ultrasound_Dataset'`.   
