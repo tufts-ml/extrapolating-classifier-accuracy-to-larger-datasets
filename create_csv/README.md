@@ -6,7 +6,7 @@
 
 ## ChestX-ray8
 
-1. Download and econde ChestX-ray8 with `encode_ChestX-ray8.py`
+1. Download and encode ChestX-ray8 with `encode_ChestX-ray8.py`
 2. Run `create_csv_ChestX-ray8.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
