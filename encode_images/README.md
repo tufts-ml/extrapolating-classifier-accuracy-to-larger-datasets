@@ -1,60 +1,60 @@
 ## Table of Contents
 
-- [ChestMNIST](#chestmnist)
-- [PneumoniaMNIST](#pneumoniamnist)
-- [BrestMNIST](#brestmnist)
+- [ChestX-ray8](#chestx-ray8)
+- [Chest X-Ray](#chest-x-ray)
+- [Breast Ultrasound Dataset](#breast-ultrasound-dataset)
 
-## ChestMNIST
+## ChestX-ray8
 
-1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) and `Data_Entry_2017_v2020.csv` into a folder named `ChestXray-NIHCC`.
-2. Run `encode_ChestXray-NIHCC.py --directory='{path_to_dataset}'`.
+1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) and `Data_Entry_2017_v2020.csv` into a folder named `ChestX-ray8`.
+2. Run `encode_ChestX-ray8.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── ChestXray-NIHCC
-           ├── Data_Entry_2017_v2020.csv
+       └── ChestX-ray8
            ├── 00000001_000.png
            ├── 00000001_001.png
-           ├── 00000001_002.png
            ├── ...
            ├── ...
-           └── ...
+           ├── ...
+           ├── 00030805_000.png
+           └── Data_Entry_2017_v2020.csv
    ```
 
-   run `encode_ChestXray-NIHCC.py --directory='/Users/user/'`.
+   run `encode_ChestX-ray8.py --directory='/Users/user/'`.
    
 ## PneumoniaMNIST
 
-1. Download [ChestXRay2017.zip](https://data.mendeley.com/datasets/rscbjbr9sj/2).
-2. Run `encode_chest_xray.py --directory='{path_to_dataset}'`.
+1. Download [ChestXRay2017.zip](https://data.mendeley.com/datasets/rscbjbr9sj/2) into a folder named `Chest X-Ray`.
+2. Run `encode_Chest_X-Ray.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── chest_xray
+       └── Chest_X-Ray
            ├── test
            └── train
    ```
 
-   run `encode_chest_xray.py --directory='/Users/user/'`.
+   run `encode_Chest_X-Ray.py --directory='/Users/user/'`.
 
-## BrestMNIST
+## Breast Ultrasound Dataset
 
-1. Download [Dataset_BUSI.zip](https://scholar.cu.edu.eg/?q=afahmy/pages/dataset).
-2. Run `encode_Dataset_BUSI_with_GT.py --directory='{path_to_dataset}'`.
+1. Download [Dataset_BUSI.zip](https://scholar.cu.edu.eg/?q=afahmy/pages/dataset) into a folder named `Breast Ultrasound Dataset`.
+2. Run `encode_Breast_Ultrasound_Dataset.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── Dataset_BUSI_with_GT
+       └── Breast_Ultrasound_Dataset
            ├── benign
            ├── malignant
            └── normal
    ```
 
-   run `encode_Dataset_BUSI_with_GT.py --directory='/Users/user/'`.
+   run `encode_Breast_Ultrasound_Dataset.py --directory='/Users/user/'`.
    
