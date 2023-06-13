@@ -6,24 +6,7 @@
 
 ## ChestX-ray8
 
-1. Download and encode ChestX-ray8 with `encode_ChestX-ray8.py`
-2. Run `label_ChestX-ray8.py --directory='{path_to_dataset}'`.
-
-   For example, if the dataset is in `/Users/user/`
-
-   ```
-   └── user
-       └── encoded_ChestX-ray8
-           ├── 00000001_000.png
-           ├── 00000001_001.png
-           ├── ...
-           ├── ...
-           ├── ...
-           ├── 00030805_000.png
-           └── Data_Entry_2017_v2020.csv
-   ```
-
-   run `label_ChestX-ray8.py --directory='/Users/user/encoded_ChestX-ray8'`.
+1. `labels.csv` is generated when encoding ChestX-ray8 with `encode_ChestX-ray8.py`
 
 ## Chest X-Ray
 
