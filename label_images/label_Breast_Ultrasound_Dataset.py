@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='create_csv_Dataset_BUSI_with_GT.py')
+    parser = argparse.ArgumentParser(description='label_Breast_Ultrasound_Dataset.py')
     parser.add_argument('--directory', type=str, help='Directory where encoded images are saved', required=True)
     args = parser.parse_args()
     file_index = 0
@@ -13,13 +13,13 @@ if __name__=='__main__':
     for subdir, dirs, files in os.walk(args.directory):
         for file in files:
             if re.search('.pt$', file):
-                file_index += 1
                 label = re.split('\/', subdir)[-1]
                 assert label in ['benign', 'malignant', 'normal'], 'Unexpected label: {}'.format(label)
                 path = os.path.join(subdir, file)
                 person_id = re.findall('\((\d+)\)', file)
                 assert len(person_id) == 1, 'Unexpected file: {}'.format(file)
                 folder_df.loc[file_index] = [label, person_id[0], path]
+                file_index += 1
                 
     # Sort df and add 'study_id' column
     folder_df['person_id'] = pd.to_numeric(folder_df['person_id'])

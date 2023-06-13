@@ -12,7 +12,7 @@ from evaluation_metrics import *
 from folds import *
 from utils import *
 
-def train_and_tune(directory, n, random_state):
+def finetune(directory, n, random_state):
     # Load labels.csv
     df = pd.read_csv(os.path.join(directory, 'labels.csv'), index_col='study_id')
     df.label = df.label.apply(lambda string: ast.literal_eval(string))

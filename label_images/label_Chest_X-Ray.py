@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='create_csv_chest_xray.py')
+    parser = argparse.ArgumentParser(description='label_Chest_X-Ray.py')
     parser.add_argument('--directory', type=str, help='Directory where encoded images are saved', required=True)
     args = parser.parse_args()
     file_index = 0
@@ -13,7 +13,6 @@ if __name__=='__main__':
     for subdir, dirs, files in os.walk(args.directory):
         for file in files:
             if re.search('.pt$', file):
-                file_index += 1
                 label = re.split('\/', subdir)[-1]
                 assert label in ['PNEUMONIA', 'NORMAL'], 'Unexpected label: {}'.format(label)
                 split = re.split('\/', subdir)[-2]
@@ -32,6 +31,7 @@ if __name__=='__main__':
                 else:
                     assert False, 'Unexpected file: {}'.format(file)
                 folder_df.loc[file_index] = [label, split, person_id, path]
+                file_index += 1
                 
     # Sort df and add 'study_id' column
     folder_df['person_id'] = pd.to_numeric(folder_df['person_id'])

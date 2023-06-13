@@ -21,7 +21,7 @@ def init_encoder():
     model.eval()
     return model
     
-def encode_image(model, path, image_size=(224, 224)):
+def encode_image(model, path, device, image_size=(224, 224)):
     # ViT mean and std for normalizing 
     # see https://pytorch.org/vision/main/models/vision_transformer.html
     mean = torch.tensor([[[0.485]], [[0.456]], [[0.406]]])
