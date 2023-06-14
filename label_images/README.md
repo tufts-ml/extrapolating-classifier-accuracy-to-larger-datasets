@@ -22,7 +22,7 @@
            └── train
    ```
 
-   run `label_Chest_X-Ray.py --directory='/Users/user/encoded_chest_xray'`.
+   run `label_Chest_X-Ray.py --directory='/Users/user/encode_Chest_X-Ray'`.
 
 ## Breast Ultrasound Dataset
 
