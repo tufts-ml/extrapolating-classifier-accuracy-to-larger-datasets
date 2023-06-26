@@ -2,7 +2,7 @@
 
 - [ChestX-ray14](#chestx-ray14)
 - [Chest X-Ray](#chest-x-ray)
-- [Breast Ultrasound Dataset](#breast-ultrasound-dataset)
+- [BUSI](#busi)
 - [OASIS-3](#oasis-3)
 
 ## ChestX-ray8
@@ -42,7 +42,7 @@
 
    run `encode_Chest_X-Ray.py --directory='/Users/user/Chest_X-Ray'`.
 
-## Breast Ultrasound Dataset
+## BUSI
 
 1. Download [Dataset_BUSI.zip](https://scholar.cu.edu.eg/?q=afahmy/pages/dataset) into a folder named `BUSI`.
 2. Run `encode_BUSI.py --directory='{path_to_dataset}'`.
