@@ -1,13 +1,14 @@
 ## Table of Contents
 
-- [ChestX-ray8](#chestx-ray8)
+- [ChestX-ray14](#chestx-ray14)
 - [Chest X-Ray](#chest-x-ray)
 - [Breast Ultrasound Dataset](#breast-ultrasound-dataset)
+- [OASIS-3](#oasis-3)
 
 ## ChestX-ray8
 
 1. Consolidate downloaded [images](https://nihcc.app.box.com/v/ChestXray-NIHCC) and [Data_Entry_2017_v2020.csv](https://nihcc.app.box.com/v/ChestXray-NIHCC) into a folder named `ChestX-ray8`.
-2. Run `encode_ChestX-ray8.py --directory='{path_to_dataset}'`.
+2. Run `encode_ChestX-ray14.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
@@ -23,7 +24,7 @@
            └── Data_Entry_2017_v2020.csv
    ```
 
-   run `encode_ChestX-ray8.py --directory='/Users/user/ChestX-ray8'`.
+   run `encode_ChestX-ray14.py --directory='/Users/user/ChestX-ray14'`.
    
 ## Chest X-Ray
 
@@ -43,17 +44,39 @@
 
 ## Breast Ultrasound Dataset
 
-1. Download [Dataset_BUSI.zip](https://scholar.cu.edu.eg/?q=afahmy/pages/dataset) into a folder named `Breast Ultrasound Dataset`.
-2. Run `encode_Breast_Ultrasound_Dataset.py --directory='{path_to_dataset}'`.
+1. Download [Dataset_BUSI.zip](https://scholar.cu.edu.eg/?q=afahmy/pages/dataset) into a folder named `BUSI`.
+2. Run `encode_BUSI.py --directory='{path_to_dataset}'`.
 
    For example, if the dataset is in `/Users/user/`
 
    ```
    └── user
-       └── Breast_Ultrasound_Dataset
+       └── BUSI
            ├── benign
            ├── malignant
            └── normal
    ```
 
-   run `encode_Breast_Ultrasound_Dataset.py --directory='/Users/user/Breast_Ultrasound_Dataset'`.   
+   run `encode_BUSI.py --directory='/Users/user/BUSI'`.   
+
+## OASIS-3
+
+1. See [https://github.com/NrgXnat/oasis-scripts](https://github.com/NrgXnat/oasis-scripts) for downloading CT scans.
+2. Run `encode_OASIS-3.py --directory='{path_to_dataset}'`.
+
+   For example, if the dataset is in `/Users/user/`
+
+   ```
+   └── user
+       └── OASIS-3
+           ├── OAS30001_CT_d2438
+           ├── OAS30001_CT_d3132
+           ├── ...
+           ├── ...
+           ├── ...
+           ├── OAS31473_CT_d0126
+           ├── ADRC_Clinical_Data.csv
+           └── CT_Sessions.csv
+   ```
+
+   run `encode_OASIS-3.py --directory='/Users/user/OASIS-3'`.   
