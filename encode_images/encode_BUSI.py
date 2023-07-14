@@ -6,7 +6,7 @@ from utils import *
 from torchvision.utils import save_image
 
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='encode_Breast_Ultrasound_Dataset.py')
+    parser = argparse.ArgumentParser(description='encode_BUSI.py')
     parser.add_argument('--directory', type=str, help='Directory where images are saved', required=True)
     args = parser.parse_args()
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -19,6 +19,6 @@ if __name__=='__main__':
                 assert label in ['benign', 'malignant', 'normal'], 'Unexpected label: {}'.format(label)
                 path = os.path.join(subdir, file)
                 encoded_image = encode_image(model, path, device)
-                makedir_if_not_exist(os.path.join(os.path.dirname(args.directory), '/encoded_Breast_Ultrasound_Dataset/{}/'.format(label)))
-                encoded_path = os.path.join(os.path.dirname(args.directory), '/encoded_Breast_Ultrasound_Dataset/{}/{}.pt'.format(label, re.split('\.', file)[0]))
+                makedir_if_not_exist('{}/encoded_BUSI/{}/'.format(os.path.dirname(args.directory), label))
+                encoded_path = '{}/encoded_BUSI/{}/{}.pt'.format(os.path.dirname(args.directory), label, re.split('\.', file)[0])
                 torch.save(encoded_image, encoded_path)

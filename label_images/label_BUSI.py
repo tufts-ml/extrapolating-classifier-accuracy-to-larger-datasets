@@ -20,7 +20,6 @@ if __name__=='__main__':
                 assert len(person_id) == 1, 'Unexpected file: {}'.format(file)
                 folder_df.loc[file_index] = [label, person_id[0], path]
                 file_index += 1
-                
     # Sort df and add 'study_id' column
     folder_df['person_id'] = pd.to_numeric(folder_df['person_id'])
     folder_df = folder_df.sort_values(['label', 'person_id'])

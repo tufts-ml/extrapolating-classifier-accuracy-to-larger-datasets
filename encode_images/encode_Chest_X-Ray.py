@@ -21,6 +21,6 @@ if __name__=='__main__':
                 assert split in ['train', 'test'], 'Unexpected split: {}'.format(split)
                 path = os.path.join(subdir, file)
                 encoded_image = encode_image(model, path, device)
-                makedir_if_not_exist(os.path.join(os.path.dirname(args.directory), '/encoded_Chest_X-Ray/{}/{}/'.format(split, label)))
-                encoded_path = os.path.join(os.path.dirname(args.directory), '/encoded_Chest_X-Ray/{}/{}/{}.pt'.format(split, label, re.split('\.', file)[0]))
+                makedir_if_not_exist('{}/encoded_Chest_X-Ray/{}/{}/'.format(os.path.dirname(args.directory), split, label))
+                encoded_path = '{}/encoded_Chest_X-Ray/{}/{}/{}.pt'.format(os.path.dirname(args.directory), split, label, re.split('\.', file)[0])
                 torch.save(encoded_image, encoded_path)

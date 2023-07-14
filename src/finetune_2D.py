@@ -18,7 +18,7 @@ def finetune(directory, n, random_state):
     df.label = df.label.apply(lambda string: ast.literal_eval(string))
     
     # Train, validation, and test split
-    df['Fold'] = create_folds(df, random_state)
+    df['Fold'] = create_folds(df, random_state=random_state)
     train_df, val_df, test_df = split_folds(df)
     
     # Subsample training data
@@ -40,7 +40,7 @@ def finetune(directory, n, random_state):
     best_clf_performance = 0.0
 
     for state, C, max_iter in itertools.product(states, Cs, max_iters):
-        clf = OneVsRestClassifier(LogisticRegression(penalty='l2', C=C, random_state=state, solver='lbfgs', max_iter=max_iter))
+        clf = OneVsRestClassifier(LogisticRegression(penalty='l2', C=C, class_weight='balanced', random_state=state, solver='lbfgs', max_iter=max_iter))
         clf.fit(X_train, y_train)
 
         train_predictions = clf.predict_proba(X_train)
@@ -59,10 +59,10 @@ def finetune(directory, n, random_state):
         val_auroc = get_auroc(y_val, val_predictions)
         
         # Save best model
-        if (np.sum(val_BA)+np.sum(val_auroc))/(len(val_BA)+len(val_auroc)) > best_clf_performance:
+        if np.sum(val_auroc)/len(val_auroc) > best_clf_performance:
             best_c = C
             best_clf = clf
-            best_clf_performance = (np.sum(val_BA)+np.sum(val_auroc))/(len(val_BA)+len(val_auroc))
+            best_clf_performance = np.sum(val_auroc)/len(val_auroc)
     
     print(best_c)
    
