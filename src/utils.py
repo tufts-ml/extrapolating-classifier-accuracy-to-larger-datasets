@@ -50,7 +50,7 @@ def train_one_epoch(model, device, optimizer, loss_func, data_loader, args=None)
         loss = (1/np.log(2))*(len(slices)/len(data_loader.dataset))*loss_func(outputs, labels)
         loss.backward()
 
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+        #torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
         
         if device.type == 'cuda':
             loss = loss.cpu()

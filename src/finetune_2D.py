@@ -35,9 +35,10 @@ def finetune(directory, n, random_state):
     Cs = np.logspace(5, -5, 11)
     max_iters = np.logspace(1, 3.69897000434, 10, dtype=int)
 
-    best_c = 0
-    best_clf = None
-    best_clf_performance = 0.0
+    _, num_labels = y_train.shape
+    best_c = [0]*num_labels
+    best_clf = [None]*num_labels
+    best_clf_performance = [0.0]*num_labels
 
     for state, C, max_iter in itertools.product(states, Cs, max_iters):
         clf = OneVsRestClassifier(LogisticRegression(penalty='l2', C=C, class_weight='balanced', random_state=state, solver='lbfgs', max_iter=max_iter))
@@ -46,9 +47,7 @@ def finetune(directory, n, random_state):
         train_predictions = clf.predict_proba(X_train)
         val_predictions = clf.predict_proba(X_val)
         
-        if y_test.shape[-1] == 1 and train_predictions.shape[-1] == 2:
-            train_predictions = train_predictions[:,1][:,np.newaxis]
-            val_predictions = val_predictions[:,1][:,np.newaxis]
+        # TODO: Filter the predictions to only include the positive class (1) and exclude the negative class (0) from sklearn results (there are no 2D datasets in our experiments with one label)
         
         # Calculate balanced accuracies
         train_BA = get_balanced_accuracy(y_train, train_predictions)
@@ -58,22 +57,19 @@ def finetune(directory, n, random_state):
         train_auroc = get_auroc(y_train, train_predictions)
         val_auroc = get_auroc(y_val, val_predictions)
         
-        # Save best model
-        if np.sum(val_auroc)/len(val_auroc) > best_clf_performance:
-            best_c = C
-            best_clf = clf
-            best_clf_performance = np.sum(val_auroc)/len(val_auroc)
+        # Save best model for each label
+        for label_index in range(num_labels):
+            if val_auroc[label_index] > best_clf_performance[label_index]:
+                best_c[label_index] = C
+                best_clf[label_index] = clf
+                best_clf_performance[label_index] = val_auroc[label_index]
     
-    print(best_c)
-   
-    train_predictions = best_clf.predict_proba(X_train)
-    val_predictions = best_clf.predict_proba(X_val)
-    test_predictions = best_clf.predict_proba(X_test)
-    
-    if y_test.shape[-1] == 1 and train_predictions.shape[-1] == 2:
-        train_predictions = train_predictions[:,1][:,np.newaxis]
-        val_predictions = val_predictions[:,1][:,np.newaxis]
-        test_predictions = test_predictions[:,1][:,np.newaxis]
+    train_predictions = [best_clf[label_index].predict_proba(X_train)[:,label_index] for label_index in range(num_labels)]
+    val_predictions = [best_clf[label_index].predict_proba(X_val)[:,label_index] for label_index in range(num_labels)]
+    test_predictions = [best_clf[label_index].predict_proba(X_test)[:,label_index] for label_index in range(num_labels)]
+    train_predictions = np.transpose(train_predictions)
+    val_predictions = np.transpose(val_predictions)
+    test_predictions = np.transpose(test_predictions)
 
     # Calculate balanced accuracies
     train_BA = get_balanced_accuracy(y_train, train_predictions)

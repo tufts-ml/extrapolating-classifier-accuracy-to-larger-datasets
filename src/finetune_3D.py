@@ -55,13 +55,13 @@ def finetune(directory, n, random_state):
         optimizer = torch.optim.SGD([
             {'params': model.fc.parameters(), 'weight_decay': wd1},
             {'params': model.attention_pooling[0].parameters(), 'weight_decay': wd2},
-        ], lr=0.01, momentum=0.9)
+        ], lr=0.1, momentum=0.9)
 
         columns = ['epoch', 'train_loss', 'train_BA', 'train_auroc', 'val_loss', 
                    'val_BA', 'val_auroc', 'test_loss', 'test_BA', 'test_auroc']
         model_history_df = pd.DataFrame(columns=columns)
 
-        for epoch in range(3000):
+        for epoch in range(1000):
 
             # Train
             train_loss = train_one_epoch(model, device, optimizer, loss_func, train_loader)
