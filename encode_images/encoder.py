@@ -22,23 +22,24 @@ def init_encoder():
     model.heads = Identity()
     model.eval()
     return model
-    
-def encode_image(model, path, device, image_size=(224, 224)):
+
+def encode_image(model, path, device, grayscale=True, image_size=(224, 224)):
     # ViT mean and std for normalizing see https://pytorch.org/vision/main/models/vision_transformer.html
     mean = torch.tensor([[[0.485]], [[0.456]], [[0.406]]])
     std = torch.tensor([[[0.229]], [[0.224]], [[0.225]]])
     # Read image
     image = read_image(path).float()
     # Make sure image dimensions are (1, w, h)
-    if len(image.shape) == 2: image = image[None, :, :]
+    if grayscale and len(image.shape) == 2: image = image[None, :, :]
     # For grayscale images read with RGB values all dimension will be the same
-    if len(image.shape) == 3 and not image.shape[0] == 1: image = image[0:1, :, :]
+    if grayscale and len(image.shape) == 3 and not image.shape[0] == 1: image = image[0:1, :, :]
     # Center-crop the images using a window size equal to the length of the shorter edge and rescale them to (1, 224, 224)
+    print(image.shape)
     center_crop = torchvision.transforms.CenterCrop(min(image.shape[-1], image.shape[-2]))
     image = center_crop(image)
     image = torchvision.transforms.functional.resize(image, size=image_size)
     # Expand image
-    image = image.expand(3, image_size[0], image_size[1])
+    if grayscale: image = image.expand(3, image_size[0], image_size[1])
     # Normalize image
     image = ((image/255)-mean)/std
     # Encode image

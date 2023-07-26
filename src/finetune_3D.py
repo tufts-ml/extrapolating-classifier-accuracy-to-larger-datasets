@@ -34,9 +34,9 @@ def finetune(directory, n, random_state):
     
     # Hyperparameters
     seeds = [1001, 2001, 3001, 4001, 5001]
-    wd1s = np.append(np.logspace(-1, -3, 3), 0)
-    wd2s = np.append(np.logspace(1, -3, 5), 0)
-    
+    wd1s = np.append(np.logspace(0, -5, 6), 0)
+    wd2s = np.append(np.logspace(0, -5, 6), 0)
+
     best_model_history_df = None
     best_val_performance = 0.0
     
@@ -101,8 +101,8 @@ def finetune(directory, n, random_state):
             best_val_performance = val_performance[30+np.argmax(averaged_performance)]
             hyperparameters = {'wd1': wd1,
                                'wd2': wd2}
-            print(hyperparameters, file=open('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3_epochs=3000/n={}_random_state={}.txt'.format(n, random_state), 'w'))
-            best_model_history_df.to_csv('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3_epochs=3000/n={}_random_state={}.csv'.format(n, random_state))
+            print(hyperparameters, file=open('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3/n={}_random_state={}.txt'.format(n, random_state), 'w'))
+            best_model_history_df.to_csv('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3/n={}_random_state={}.csv'.format(n, random_state))
 
 if __name__=='__main__':
     

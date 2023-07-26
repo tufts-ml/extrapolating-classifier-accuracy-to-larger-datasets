@@ -6,6 +6,27 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 
+def load_experiment(path):
+    df = pd.read_csv(path, index_col='Unnamed: 0')
+    df.train_BA = df.train_BA.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    df.train_auroc = df.train_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    df.val_BA = df.val_BA.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    df.val_auroc = df.val_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    df.test_BA = df.test_BA.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    df.test_auroc = df.test_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    return df
+
+def rmse(labels, predictions):
+    assert labels.shape == predictions.shape,\
+    'labels.shape != predictions.shape'
+    squared_diff = np.square(labels - predictions)
+    mse = np.mean(squared_diff, axis=0)
+    rmse = np.sqrt(mse)
+    return rmse
+
+def calc_coverage(labels, lower, upper):
+    return len(labels[(labels>=lower)&(labels<=upper)])/len(labels)
+
 def load_dataset(df):
     X = torch.vstack([torch.load(path).float() for path in df.path.to_list()]).detach().numpy()
     y = torch.tensor(df.label.to_list()).detach().numpy()
@@ -50,7 +71,7 @@ def train_one_epoch(model, device, optimizer, loss_func, data_loader, args=None)
         loss = (1/np.log(2))*(len(slices)/len(data_loader.dataset))*loss_func(outputs, labels)
         loss.backward()
 
-        #torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
         
         if device.type == 'cuda':
             loss = loss.cpu()

@@ -20,7 +20,7 @@ class LogisticRegression(nn.Module):
         # Attention Pooling
         else:
             # x.shape = (num_slices_in_batch, num_classes)
-            # padded_x.shape = (num_slices_in_batch, 373, num_classes)
+            # padded_x.shape = (num_slices_in_batch, 111, num_classes)
             padded_x = torch.vstack([split[torch.linspace(start=0, end=split.shape[0]-1, steps=111, dtype=torch.long)]
                                            .expand(split.shape[0], 111, self.num_classes)\
                                            for split in torch.split(x, slices)])
@@ -39,4 +39,5 @@ class LogisticRegression(nn.Module):
             context_vector = attention_weights*x
             pooled = torch.vstack([torch.sum(split, dim=0)\
                                    for split in torch.split(context_vector, slices)])
+            #print(attention_weights)
         return pooled

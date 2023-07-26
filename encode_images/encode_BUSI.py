@@ -18,7 +18,7 @@ if __name__=='__main__':
                 label = re.split('\/', subdir)[-1]
                 assert label in ['benign', 'malignant', 'normal'], 'Unexpected label: {}'.format(label)
                 path = os.path.join(subdir, file)
-                encoded_image = encode_image(model, path, device)
+                encoded_image = encode_image(model, path, device, grayscale=False)
                 makedir_if_not_exist('{}/encoded_BUSI/{}/'.format(os.path.dirname(args.directory), label))
                 encoded_path = '{}/encoded_BUSI/{}/{}.pt'.format(os.path.dirname(args.directory), label, re.split('\.', file)[0])
                 torch.save(encoded_image, encoded_path)
