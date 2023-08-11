@@ -1,6 +1,17 @@
 import numpy as np
 from sklearn.metrics import roc_auc_score, roc_curve
 
+def rmse(labels, predictions):
+    assert labels.shape == predictions.shape,\
+    'labels.shape != predictions.shape'
+    squared_diff = np.square(labels - predictions)
+    mse = np.mean(squared_diff, axis=0)
+    rmse = np.sqrt(mse)
+    return rmse
+
+def coverage(labels, lower, upper):
+    return len(labels[(labels>=lower)&(labels<=upper)])/len(labels)
+
 def get_balanced_accuracy(labels, predictions, thresholds=None, return_thresholds=False):
     labels = np.array(labels)
     predictions = np.array(predictions)

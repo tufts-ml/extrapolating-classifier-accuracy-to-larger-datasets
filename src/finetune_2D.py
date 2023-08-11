@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-import ast
+import ast # Package that converts a string in list format into a list
 import itertools
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression

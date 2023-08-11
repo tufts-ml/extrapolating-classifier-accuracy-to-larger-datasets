@@ -3,81 +3,86 @@ import scipy
 import torch
 import gpytorch
 
-def truncated_normal_uncertainty(mu_predicted, sigma_predicted, lower_bound=0.0, upper_bound=1.0):
+def uniform_probability_mass(y, loc, scale, epsilon=0.01):
+    probability_lower = scipy.stats.uniform.cdf(y-epsilon, loc=loc, scale=scale)
+    probability_upper = scipy.stats.uniform.cdf(y+epsilon, loc=loc, scale=scale)
+    probability_range = probability_upper - probability_lower
+    return np.mean(probability_range)
+
+def truncnorm_probability_mass(y, a, b, loc, scale, epsilon=0.01):
+    alpha = (a - loc) / scale
+    beta = (b - loc) / scale
+    lower_probability = scipy.stats.truncnorm.cdf(y-epsilon, alpha, beta, loc=loc, scale=scale)
+    upper_probability = scipy.stats.truncnorm.cdf(y+epsilon, alpha, beta, loc=loc, scale=scale)
+    probability_mass = upper_probability - lower_probability
+    return np.mean(probability_mass)
+
+def truncated_normal_uncertainty(a, b, loc, scale, lower_percentile=0.025, upper_percentile=0.975):
     # Calculate the upper and lower quantiles of the truncated normal distribution
-    lower_quantile = scipy.stats.truncnorm.ppf(0.025, (lower_bound - mu_predicted) / sigma_predicted, (upper_bound - mu_predicted) / sigma_predicted, loc=mu_predicted, scale=sigma_predicted)
-    upper_quantile = scipy.stats.truncnorm.ppf(0.975, (lower_bound - mu_predicted) / sigma_predicted, (upper_bound - mu_predicted) / sigma_predicted, loc=mu_predicted, scale=sigma_predicted)
+    alpha = (a - loc) / scale
+    beta = (b - loc) / scale
+    lower_quantile = scipy.stats.truncnorm(alpha, beta, loc=loc, scale=scale).ppf(lower_percentile)
+    upper_quantile = scipy.stats.truncnorm(alpha, beta, loc=loc, scale=scale).ppf(upper_percentile)
 
     # Clip the quantiles to ensure they remain within the truncation bounds
-    lower_quantile = np.maximum(lower_quantile, lower_bound)
-    upper_quantile = np.minimum(upper_quantile, upper_bound)
+    lower_quantile = np.maximum(lower_quantile, a)
+    upper_quantile = np.minimum(upper_quantile, b)
 
     return lower_quantile, upper_quantile
 
-def uniform_likelihood(values, lower=0.0, upper=1.0):
-    likelihood = 0
-    for value in values:
-        if value < lower or value > upper:
-            likelihood += -np.inf
-        else:
-            likelihood += np.log(1 / (upper - lower))
-    return np.sum(likelihood)
+def my_truncnorm(a, b, loc, scale):
+    alpha = (a - loc) / scale
+    beta = (b - loc) / scale
+    return scipy.stats.truncnorm(alpha, beta, loc, scale)
 
-def truncated_normal_likelihood(y, mu, sigma, lower_bound=0.0, upper_bound=1.0):
-    # Calculate the log-likelihood using the truncated normal distribution
-    likelihood = scipy.stats.truncnorm.logpdf(y, (lower_bound - mu) / sigma, (upper_bound - mu) / sigma, loc=mu, scale=sigma)
-    
-    return np.sum(likelihood)
+def calc_outputscale_prior(tau_prior, desired_low, desired_high, num_samples=1000):
+    desired_medium = (desired_high+desired_low)/2
+    best_dist = np.inf
+    best_m, best_s = 0, 0
+    tau_samples = tau_prior.rvs(num_samples)
+    for m in np.linspace(0.001, 0.05, 100):
+        for s in np.linspace(0.001, 0.05, 100):
+            outputscale_prior = my_truncnorm(0.0, np.inf, m, s)
+            outputscale_samples = outputscale_prior.rvs(num_samples)
+            expression_values = 6*np.sqrt(outputscale_samples**2+tau_samples**2)
+            low, medium, high = np.percentile(expression_values, [20, 50, 80])
+            if abs(desired_low - low) + abs(desired_medium - medium) + abs(desired_high - high) < best_dist:
+                best_dist = abs(desired_low - low) + abs(desired_medium - medium) + abs(desired_high - high)
+                best_m, best_s = m, s
+    outputscale_prior = my_truncnorm(0.0, np.inf, best_m, best_s)
+    outputscale_samples = outputscale_prior.rvs(num_samples)
+    expression_values = 6*np.sqrt(outputscale_samples**2+tau_samples**2)
+    return best_m, best_s
 
-class TauPrior(gpytorch.priors.Prior):    
-    def __init__(self):
-        super(TauPrior, self).__init__()
-        self.mu = 0.01
-        self.sigma = 1/30
-        self.lower_bound = 0.0
-        self.upper_bound = np.inf
-        
-    def log_prob(self, x):
-        a = torch.tensor((self.lower_bound - self.mu) / self.sigma)
-        b = torch.tensor((self.upper_bound - self.mu) / self.sigma)
-        log_prob = (-0.5 * ((x - self.mu) / self.sigma) ** 2) - np.log(self.sigma * np.sqrt(2 * np.pi)) - torch.log(torch.erf(b / np.sqrt(2)) - torch.erf(a / np.sqrt(2)) + 1e-15)
-        return log_prob
-    
-class OutputscalePrior(gpytorch.priors.Prior):    
-    def __init__(self):
-        super(OutputscalePrior, self).__init__()
-        self.mu = 1/30
-        self.sigma = 0.01
-        self.lower_bound = 0.0
-        self.upper_bound = np.inf
-        
-    def log_prob(self, x):
-        a = torch.tensor((self.lower_bound - self.mu) / self.sigma)
-        b = torch.tensor((self.upper_bound - self.mu) / self.sigma)
-        log_prob = (-0.5 * ((x - self.mu) / self.sigma) ** 2) - np.log(self.sigma * np.sqrt(2 * np.pi)) - torch.log(torch.erf(b / np.sqrt(2)) - torch.erf(a / np.sqrt(2)) + 1e-15)
-        return log_prob    
-    
-class LengthscalePrior(gpytorch.priors.Prior):    
-    def __init__(self):
-        super(LengthscalePrior, self).__init__()
-        self.mu = 6
-        self.sigma = 3
-        self.lower_bound = 0.0
-        self.upper_bound = np.inf
-        
-    def log_prob(self, x):
-        a = torch.tensor((self.lower_bound - self.mu) / self.sigma)
-        b = torch.tensor((self.upper_bound - self.mu) / self.sigma)
-        log_prob = (-0.5 * ((x - self.mu) / self.sigma) ** 2) - np.log(self.sigma * np.sqrt(2 * np.pi)) - torch.log(torch.erf(b / np.sqrt(2)) - torch.erf(a / np.sqrt(2)) + 1e-15)
-        return log_prob
-    
-class EpsilonPrior(gpytorch.priors.Prior):    
+class EpsilonPrior(gpytorch.priors.Prior):   
+    arg_constraints = {} # Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
     def __init__(self, min_val, max_val):
         super(EpsilonPrior, self).__init__()
         self.min_val = min_val
         self.max_val = max_val
-        self.slope = (2/self.max_val - self.min_val)/(self.max_val - self.min_val)
-        self.intercept = 2 - self.slope*self.max_val
+        self.slope = (0-(2/abs(self.max_val - self.min_val)))/(self.min_val - self.max_val)
+        self.intercept = -self.slope*self.min_val + 0
+        
+    def forward(self, x):
+        a = min(self.min_val, self.max_val)
+        b = max(self.min_val, self.max_val)
+        return torch.tensor([self.slope*i+self.intercept if (i >= a and i <= b) else torch.tensor(0) for i in x])
         
     def log_prob(self, x):
-        return torch.log(self.slope*x+self.intercept) if (x <= self.max_val and x >= self.min_val) else torch.Tensor([-np.inf])
+        return torch.log(self.forward(x))
+
+class TruncatedNormalPrior(gpytorch.priors.Prior):
+    def __init__(self, a, b, loc, scale):
+        super(TruncatedNormalPrior, self).__init__()
+        self.a = a
+        self.b = b
+        self.loc = loc
+        self.scale = scale
+        
+    def log_prob(self, x):
+        alpha = torch.tensor((self.a - self.loc) / self.scale)
+        beta = torch.tensor((self.b - self.loc) / self.scale)
+        Phi_alpha = 1/2*(1+torch.erf(alpha/np.sqrt(2))) if not self.a == -np.inf else 0
+        Phi_beta = 1/2*(1+torch.erf(beta/np.sqrt(2))) if not self.b == np.inf else 1
+        log_phi_x = np.log(1/np.sqrt(2*np.pi))+(-1/2*((x-self.loc)/self.scale)**2)
+        return np.log(1/self.scale)+log_phi_x-np.log(Phi_beta-Phi_alpha+1e-15)

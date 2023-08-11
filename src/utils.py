@@ -16,16 +16,12 @@ def load_experiment(path):
     df.test_auroc = df.test_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
     return df
 
-def rmse(labels, predictions):
-    assert labels.shape == predictions.shape,\
-    'labels.shape != predictions.shape'
-    squared_diff = np.square(labels - predictions)
-    mse = np.mean(squared_diff, axis=0)
-    rmse = np.sqrt(mse)
-    return rmse
-
-def calc_coverage(labels, lower, upper):
-    return len(labels[(labels>=lower)&(labels<=upper)])/len(labels)
+def split_df(df, index):
+    X_train = torch.Tensor(df[df.n<=360]['n'].to_numpy())
+    y_train = torch.Tensor(np.array(df[df.n<=360]['test_auroc'].to_list())[:,index])
+    X_test = torch.Tensor(df[df.n>360]['n'].to_numpy())
+    y_test = torch.Tensor(np.array(df[df.n>360]['test_auroc'].to_list())[:,index])
+    return X_train, y_train, X_test, y_test
 
 def load_dataset(df):
     X = torch.vstack([torch.load(path).float() for path in df.path.to_list()]).detach().numpy()

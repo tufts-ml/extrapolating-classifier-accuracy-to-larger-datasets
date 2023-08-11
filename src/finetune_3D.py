@@ -34,22 +34,23 @@ def finetune(directory, n, random_state):
     
     # Hyperparameters
     seeds = [1001, 2001, 3001, 4001, 5001]
+    seeds = [1001]
     wd1s = np.append(np.logspace(0, -5, 6), 0)
     wd2s = np.append(np.logspace(0, -5, 6), 0)
+    wd2s = [0]
 
     best_model_history_df = None
     best_val_performance = 0.0
     
     for seed, wd1, wd2 in itertools.product(seeds, wd1s, wd2s):
-        print('seed: {}, wd1: {}, wd2: {}'.format(seed, wd1, wd2))
-
+        #print('seed: {}, wd1: {}, wd2: {}'.format(seed, wd1, wd2))
         torch.manual_seed(seed)
 
         train_loader = DataLoader(train_dataset, batch_size=len(train_dataset), collate_fn=collate_fn)
         val_loader = DataLoader(val_dataset, batch_size=1, collate_fn=collate_fn)
         test_loader = DataLoader(test_dataset, batch_size=1, collate_fn=collate_fn)
         
-        model = LogisticRegression(attention=True, num_classes=1)
+        model = LogisticRegression(attention=False, num_classes=1)
         model.to(device)
         loss_func = nn.BCELoss()
         optimizer = torch.optim.SGD([
@@ -61,7 +62,7 @@ def finetune(directory, n, random_state):
                    'val_BA', 'val_auroc', 'test_loss', 'test_BA', 'test_auroc']
         model_history_df = pd.DataFrame(columns=columns)
 
-        for epoch in range(1000):
+        for epoch in range(3000):
 
             # Train
             train_loss = train_one_epoch(model, device, optimizer, loss_func, train_loader)
@@ -84,7 +85,7 @@ def finetune(directory, n, random_state):
             # Append evaluation metrics to DataFrame
             row = [epoch+1, train_loss, train_BA, train_auroc, val_loss, val_BA, val_auroc, test_loss, test_BA, test_auroc]
             model_history_df.loc[epoch] = row
-            print(model_history_df.iloc[epoch])
+            #print(model_history_df.iloc[epoch])
 
             # Stopping criterion
             if model_history_df.shape[0] > 3:
@@ -94,15 +95,14 @@ def finetune(directory, n, random_state):
 
         val_performance = np.sum(np.array(model_history_df.val_auroc.to_list()), axis=-1)
         averaged_performance = np.array([sum(val_performance[index-30:index]) for index in range(30, len(val_performance))])
-        print(model_history_df.iloc[30+np.argmax(averaged_performance)])
+        #print(model_history_df.iloc[30+np.argmax(averaged_performance)])
 
         if val_performance[30+np.argmax(averaged_performance)] > best_val_performance:
             best_model_history_df = model_history_df
             best_val_performance = val_performance[30+np.argmax(averaged_performance)]
-            hyperparameters = {'wd1': wd1,
-                               'wd2': wd2}
-            print(hyperparameters, file=open('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3/n={}_random_state={}.txt'.format(n, random_state), 'w'))
-            best_model_history_df.to_csv('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3/n={}_random_state={}.csv'.format(n, random_state))
+            hyperparameters = {'seed': seed, 'wd1': wd1, 'wd2': wd2}
+            print(hyperparameters, file=open('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3_max_iters=3000/n={}_random_state={}.txt'.format(n, random_state), 'w'))
+            best_model_history_df.to_csv('/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments/OASIS-3_max_iters=3000/n={}_random_state={}.csv'.format(n, random_state))
 
 if __name__=='__main__':
     

@@ -1,8 +1,8 @@
 import argparse
 import os
 import re
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='label_Breast_Ultrasound_Dataset.py')
