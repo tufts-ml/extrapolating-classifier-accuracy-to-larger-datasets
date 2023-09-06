@@ -12,7 +12,6 @@
 To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data  see `notebooks/demo.ipynb`.
 
 ##### Initializing our Gaussian process
-After initializing our Gaussian proccess train the model until convergence.
 
 ```python
 likelihood = gpytorch.likelihoods.GaussianLikelihood()
