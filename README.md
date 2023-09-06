@@ -29,8 +29,8 @@ lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale, lower_p
 
 ## Reproducing Results
 
-To reproduce model performance at varying dataset sizes download datasets (see `encode_images/README.md` and `label_images/README.md` for more details) and fit presented classifiers to each dataset (see `src/finetune_2D.py` and `src/finetune_3D.py` for more details). The results from our paper are saved in `experiments/`.
+To reproduce model performance at varying dataset sizes 1) download datasets (see `encode_images/README.md` and `label_images/README.md` for more details) and 2) fit classifiers to each dataset (see `src/finetune_2D.py` and `src/finetune_3D.py`). The results from our paper are saved in `experiments/`.
 
-To reproduce learning curves with the results presented presented in our paper see `notebooks/figures.ipynb` and `notebooks/tables.ipynb`.
+To reproduce learning curves with the results from our paper see `notebooks/figures.ipynb` and `notebooks/tables.ipynb`.
 
-To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data  see `notebooks/demo.ipynb`.
+To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data see `notebooks/demo.ipynb`.
