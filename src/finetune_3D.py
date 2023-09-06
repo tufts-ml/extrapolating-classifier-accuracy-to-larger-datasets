@@ -5,11 +5,11 @@ import pandas as pd
 
 import ast
 import itertools
-
-from evaluation_metrics import *
-from folds import *
-from logistic_regression import *
-from utils import *
+# Importing our custom module(s)
+import metrics
+import folds
+import logistic_regression
+import utils
 
 def finetune(experiments_path, labels_path, lr, n, random_state):
     # Load labels.csv
@@ -17,17 +17,17 @@ def finetune(experiments_path, labels_path, lr, n, random_state):
     df.label = df.label.apply(lambda string: ast.literal_eval(string))
     
     # Train, validation, and test split
-    df['Fold'] = create_folds(df, random_state=random_state)
-    train_df, val_df, test_df = split_folds(df)
+    df['Fold'] = folds.create_folds(df, random_state=random_state)
+    train_df, val_df, test_df = folds.split_folds(df)
     
     # Subsample training data
     # TODO: Print warning if n > train_df.shape[0]
     if n < train_df.shape[0]: train_df = train_df.sample(n=n, random_state=random_state)
     
     # Load data
-    train_dataset = EncodedDataset(train_df)
-    val_dataset = EncodedDataset(val_df)
-    test_dataset = EncodedDataset(test_df)
+    train_dataset = utils.EncodedDataset(train_df)
+    val_dataset = utils.EncodedDataset(val_df)
+    test_dataset = utils.EncodedDataset(test_df)
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -43,11 +43,11 @@ def finetune(experiments_path, labels_path, lr, n, random_state):
         #print('seed: {}, wd1: {}, wd2: {}'.format(seed, wd1, wd2))
         torch.manual_seed(seed)
 
-        train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn)
-        val_loader = DataLoader(val_dataset, batch_size=1, collate_fn=collate_fn)
-        test_loader = DataLoader(test_dataset, batch_size=1, collate_fn=collate_fn)
+        train_loader = utils.DataLoader(train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn)
+        val_loader = utils.DataLoader(val_dataset, batch_size=1, collate_fn=collate_fn)
+        test_loader = utils.DataLoader(test_dataset, batch_size=1, collate_fn=collate_fn)
         
-        model = LogisticRegression()
+        model = logistic_regression.LogisticRegression()
         model.to(device)
         loss_func = nn.BCELoss()
         optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=wd1)
@@ -59,22 +59,22 @@ def finetune(experiments_path, labels_path, lr, n, random_state):
         for epoch in range(1000):
 
             # Train
-            train_loss = train_one_epoch(model, device, optimizer, loss_func, train_loader)
+            train_loss = utils.train_one_epoch(model, device, optimizer, loss_func, train_loader)
 
             # Evaluate
-            train_loss, train_labels, train_predictions = evaluate(model, device, loss_func, train_loader)
-            val_loss, val_labels, val_predictions = evaluate(model, device, loss_func, val_loader)
-            test_loss, test_labels, test_predictions = evaluate(model, device, loss_func, test_loader)
+            train_loss, train_labels, train_predictions = utils.evaluate(model, device, loss_func, train_loader)
+            val_loss, val_labels, val_predictions = utils.evaluate(model, device, loss_func, val_loader)
+            test_loss, test_labels, test_predictions = utils.evaluate(model, device, loss_func, test_loader)
 
             # Calculate balanced accuracies
-            train_BA = get_balanced_accuracy(train_labels, train_predictions)
-            thresholds, val_BA = get_balanced_accuracy(val_labels, val_predictions, return_thresholds=True)
-            test_BA = get_balanced_accuracy(test_labels, test_predictions, thresholds=thresholds)
+            train_BA = metrics.get_balanced_accuracy(train_labels, train_predictions)
+            thresholds, val_BA = metrics.get_balanced_accuracy(val_labels, val_predictions, return_thresholds=True)
+            test_BA = metrics.get_balanced_accuracy(test_labels, test_predictions, thresholds=thresholds)
 
             # Calculate AUROCs
-            train_auroc = get_auroc(train_labels, train_predictions)
-            val_auroc = get_auroc(val_labels, val_predictions)
-            test_auroc = get_auroc(test_labels, test_predictions)
+            train_auroc = metrics.get_auroc(train_labels, train_predictions)
+            val_auroc = metrics.get_auroc(val_labels, val_predictions)
+            test_auroc = metrics.get_auroc(test_labels, test_predictions)
 
             # Append evaluation metrics to DataFrame
             row = [epoch+1, train_loss, train_BA, train_auroc, val_loss, val_BA, val_auroc, test_loss, test_BA, test_auroc]

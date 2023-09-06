@@ -7,10 +7,10 @@ import ast # Package that converts a string in list format into a list
 import itertools
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
-
-from evaluation_metrics import *
-from folds import *
-from utils import *
+# Importing our custom module(s)
+import metrics
+import folds
+import utils
 
 def finetune(labels_path, n, random_state):
     # Load labels.csv
@@ -18,17 +18,17 @@ def finetune(labels_path, n, random_state):
     df.label = df.label.apply(lambda string: ast.literal_eval(string))
     
     # Train, validation, and test split
-    df['Fold'] = create_folds(df, random_state=random_state)
-    train_df, val_df, test_df = split_folds(df)
+    df['Fold'] = folds.create_folds(df, random_state=random_state)
+    train_df, val_df, test_df = folds.split_folds(df)
     
     # Subsample training data
     # TODO: Print warning if n > train_df.shape[0]
     if n < train_df.shape[0]: train_df = train_df.sample(n=n, random_state=random_state)
         
     # Load data
-    X_train, y_train = load_dataset(train_df)
-    X_val, y_val = load_dataset(val_df)
-    X_test, y_test = load_dataset(test_df)
+    X_train, y_train = utils.load_dataset(train_df)
+    X_val, y_val = utils.load_dataset(val_df)
+    X_test, y_test = utils.load_dataset(test_df)
 
     # Hyperparameters
     states = [1001, 2001, 3001, 4001, 5001]
@@ -51,12 +51,12 @@ def finetune(labels_path, n, random_state):
         # TODO: Filter the predictions to only include the positive class (1) and exclude the negative class (0) from sklearn results (there are no 2D datasets in our experiments with one label)
         
         # Calculate balanced accuracies
-        train_BA = get_balanced_accuracy(y_train, train_predictions)
-        val_BA = get_balanced_accuracy(y_val, val_predictions)
+        train_BA = metrics.get_balanced_accuracy(y_train, train_predictions)
+        val_BA = metrics.get_balanced_accuracy(y_val, val_predictions)
 
         # Calculate AUROCs
-        train_auroc = get_auroc(y_train, train_predictions)
-        val_auroc = get_auroc(y_val, val_predictions)
+        train_auroc = metrics.get_auroc(y_train, train_predictions)
+        val_auroc = metrics.get_auroc(y_val, val_predictions)
         
         # Save best model for each label
         for label_index in range(num_labels):
@@ -74,13 +74,13 @@ def finetune(labels_path, n, random_state):
     test_predictions = np.transpose(test_predictions)
 
     # Calculate balanced accuracies
-    train_BA = get_balanced_accuracy(y_train, train_predictions)
-    thresholds, val_BA = get_balanced_accuracy(y_val, val_predictions, return_thresholds=True)
-    test_BA = get_balanced_accuracy(y_test, test_predictions, thresholds=thresholds)
+    train_BA = metrics.get_balanced_accuracy(y_train, train_predictions)
+    thresholds, val_BA = metrics.get_balanced_accuracy(y_val, val_predictions, return_thresholds=True)
+    test_BA = metrics.get_balanced_accuracy(y_test, test_predictions, thresholds=thresholds)
     
     # Calculate AUROCs
-    train_auroc = get_auroc(y_train, train_predictions)
-    val_auroc = get_auroc(y_val, val_predictions)
-    test_auroc = get_auroc(y_test, test_predictions)
+    train_auroc = metrics.get_auroc(y_train, train_predictions)
+    val_auroc = metrics.get_auroc(y_val, val_predictions)
+    test_auroc = metrics.get_auroc(y_test, test_predictions)
     
     return train_BA, train_auroc, val_BA, val_auroc, test_BA, test_auroc

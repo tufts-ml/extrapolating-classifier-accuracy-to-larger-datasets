@@ -6,8 +6,8 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 import gpytorch
-
-import evaluation_metrics as metrics
+# Importing our custom module(s)
+import metrics
 import models
 import priors
 
