@@ -7,9 +7,7 @@
 
 ## Predicting Classifier Accuracy
 
-
-
-To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data  see `notebooks/demo.ipynb`.
+To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data see `notebooks/demo.ipynb`.
 
 ##### Initializing our Gaussian process
 
