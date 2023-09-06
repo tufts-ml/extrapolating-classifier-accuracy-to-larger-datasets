@@ -12,9 +12,9 @@ from evaluation_metrics import *
 from folds import *
 from utils import *
 
-def finetune(directory, n, random_state):
+def finetune(labels_path, n, random_state):
     # Load labels.csv
-    df = pd.read_csv(os.path.join(directory, 'labels.csv'), index_col='study_id')
+    df = pd.read_csv(os.path.join(labels_path, 'labels.csv'), index_col='study_id')
     df.label = df.label.apply(lambda string: ast.literal_eval(string))
     
     # Train, validation, and test split
@@ -22,8 +22,8 @@ def finetune(directory, n, random_state):
     train_df, val_df, test_df = split_folds(df)
     
     # Subsample training data
-    assert n <= train_df.shape[0], 'n={} is greater than number of training samples'.format(n)
-    train_df = train_df.sample(n=n, random_state=random_state)
+    # TODO: Print warning if n > train_df.shape[0]
+    if n < train_df.shape[0]: train_df = train_df.sample(n=n, random_state=random_state)
         
     # Load data
     X_train, y_train = load_dataset(train_df)
@@ -34,9 +34,10 @@ def finetune(directory, n, random_state):
     states = [1001, 2001, 3001, 4001, 5001]
     Cs = np.logspace(5, -5, 11)
     max_iters = np.logspace(1, 3.69897000434, 10, dtype=int)
-
+    
     _, num_labels = y_train.shape
     best_c = [0]*num_labels
+    best_iter = [0]*num_labels
     best_clf = [None]*num_labels
     best_clf_performance = [0.0]*num_labels
 
@@ -61,6 +62,7 @@ def finetune(directory, n, random_state):
         for label_index in range(num_labels):
             if val_auroc[label_index] > best_clf_performance[label_index]:
                 best_c[label_index] = C
+                best_iter[label_index] = max_iter
                 best_clf[label_index] = clf
                 best_clf_performance[label_index] = val_auroc[label_index]
     

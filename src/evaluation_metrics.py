@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import log_loss, roc_auc_score, roc_curve
 
 def rmse(labels, predictions):
     assert labels.shape == predictions.shape,\
@@ -36,6 +36,16 @@ def get_balanced_accuracy(labels, predictions, thresholds=None, return_threshold
 
     return (0.5 * (sensitivity + specificity)) if return_thresholds is False else (thresholds, 0.5 * (sensitivity + specificity))
 
+def get_loss(labels, predictions):
+    labels = np.array(labels)
+    predictions = np.array(predictions)
+    assert labels.shape == predictions.shape,\
+    'labels.shape != predictions.shape'
+    
+    _, num_labels = labels.shape
+    losses = np.array([log_loss(labels[:,label_index], predictions[:,label_index])\
+                       for label_index in range(num_labels)])
+    return losses
 
 def get_auroc(labels, predictions):
     labels = np.array(labels)

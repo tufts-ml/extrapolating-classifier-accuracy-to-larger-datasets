@@ -12,17 +12,23 @@ from utils import *
 if __name__=='__main__':
     
     experiments_path = '/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments'
-    models_path = os.path.join(os.path.dirname(experiments_path), 'models')
+    models_path = os.path.join(os.path.dirname(experiments_path), 'models_extra')
     datasets = [('ChestX-ray14', 'ChestX-ray14_short_range.csv'),
                 ('Chest_X-Ray', 'Chest_X-Ray_short_range.csv'),
-                ('BUSI', 'BUSI_short_range.csv')]
+                ('BUSI', 'BUSI_short_range.csv'),
+                ('TMED-2', 'TMED-2_short_range.csv'),
+                ('OASIS-3', 'OASIS-3_short_range.csv'),
+                ('Pilot', 'Pilot_short_range.csv')]
     models = [('PowerLaw', train_PowerLaw), 
               ('Arctan', train_Arctan), 
               ('GPPowerLaw', train_GPPowerLaw), 
               ('GPArctan', train_GPArctan)]
     labels = [['Atelectasis', 'Effusion', 'Infiltration'],
               ['Bacteria', 'Virus'],
-              ['Normal', 'Benign', 'Malignant']]
+              ['Normal', 'Benign', 'Malignant'],
+              ['PLAX', 'PSAX', 'A4C', 'A2C'],
+              ['Alzheimer’s'],
+              ['WMD', 'CBI']]
     
     for datasets_index, (dataset_name, filename) in enumerate(datasets):
         df = load_experiment(os.path.join(experiments_path, filename))

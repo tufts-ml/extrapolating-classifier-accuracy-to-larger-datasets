@@ -5,6 +5,11 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
+import gpytorch
+
+import evaluation_metrics as metrics
+import models
+import priors
 
 def load_experiment(path):
     df = pd.read_csv(path, index_col='Unnamed: 0')
@@ -38,7 +43,7 @@ class EncodedDataset(Dataset):
 
     def __getitem__(self, index):
         image = torch.load(self.path[index], map_location='cpu').float().detach().numpy()
-        slices = min(111, image.shape[0])
+        slices = min(50, image.shape[0])
         linspace = np.linspace(start=0, stop=image.shape[0]-1, num=slices, dtype=int)
         return image[linspace], self.label[index]
 
@@ -108,3 +113,111 @@ def evaluate(model, device, loss_func, data_loader):
             running_loss += loss.numpy()
             
     return running_loss, label_list, prediction_list
+
+# TODO: Should I create a seperate file for plotting helper functions?
+def print_metrics(model_objects, y_train, X_test, y_test, verbose=1):
+    model, *likelihood_objects = model_objects
+    label_map = { models.PowerLaw: 'Power law', models.Arctan: 'Arctan', models.GPPowerLaw: 'GP pow', models.GPArctan: 'GP arc' }
+    label = label_map.get(type(model), 'Unknown') # Default label is 'Unknown' 
+    if label.startswith('GP'):
+        likelihood, = likelihood_objects
+        with torch.no_grad(): predictions = likelihood(model(X_test))
+        loc = predictions.mean.numpy()
+        scale = predictions.stddev.numpy()
+        lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale)   
+        error = metrics.rmse(y_test.detach().numpy(), loc)
+        upm = priors.uniform_probability_mass(y_test.detach().numpy(), torch.min(y_train).item(), 1-torch.min(y_train).item())
+        tpm = priors.truncnorm_probability_mass(y_test.detach().numpy(), 0.0, 1.0, loc, scale)
+        coverage_95 = metrics.coverage(y_test.detach().numpy(), lower, upper)
+        lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale, 0.1, 0.9)
+        coverage_80 = metrics.coverage(y_test.detach().numpy(), lower, upper)
+        if verbose:
+            print('{} RMSE: {:.4f}'.format(label, 100*error))
+            print('Uniform probability mass: {:.4f}'.format(upm))
+            print('{} probability mass: {:.4f}'.format(label, tpm))
+            print('{} 80% coverage: {:.2f}%'.format(label, 100*coverage_80))      
+            print('{} 95% coverage: {:.2f}%\n'.format(label, 100*coverage_95))
+        return 100*error, upm, tpm, 100*coverage_80, 100*coverage_95
+    else:
+        with torch.no_grad(): loc = model(X_test).detach().numpy()
+        error = metrics.rmse(y_test.detach().numpy(), loc)
+        if verbose:
+            print('{} RMSE: {:.4f}\n'.format(label, 100*error))
+        return 100*error,
+    
+def plot_data(ax, X_train, y_train, X_test, y_test):
+    ax.scatter(X_train, y_train, color='black', alpha=1.0, label='Initial subsets')
+    ax.scatter(X_test, y_test, color='black', alpha=0.3, label='Ground truth')
+
+def load_model(name, path, X_train, y_train):
+    model_map = { 'PowerLaw': models.PowerLaw, 'Arctan': models.Arctan, 'GPPowerLaw': models.GPPowerLaw, 'GPArctan': models.GPArctan }
+    model_class = model_map[name]
+    if name.startswith('GP'):
+        likelihood = gpytorch.likelihoods.GaussianLikelihood()
+        model = model_class(X_train, y_train, likelihood)
+        model.load_state_dict(torch.load(path))
+        likelihood.eval()
+        model.eval()
+        return model, likelihood
+    else:
+        model = model_class(y_train[-1].item())
+        model.load_state_dict(torch.load(path))
+        model.eval()
+        return model,
+
+def plot_model(ax, model_objects, color='black'):
+    model, *likelihood_objects = model_objects
+    label_map = { models.PowerLaw: 'Power law', models.Arctan: 'Arctan', models.GPPowerLaw: 'GP pow', models.GPArctan: 'GP arc' }
+    label = label_map.get(type(model), 'Unknown') # Default label is 'Unknown' 
+    if label.startswith('GP'):
+        likelihood, = likelihood_objects
+        linspace = torch.linspace(50, 30000, 29950)
+        with torch.no_grad(): predictions = likelihood(model(linspace))
+        loc = predictions.mean.numpy()
+        scale = predictions.stddev.numpy()
+        lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale)   
+        ax.plot(linspace.detach().numpy(), loc, color=color, label=label)
+        ax.fill_between(linspace.detach().numpy(), lower, upper, color=color, alpha=0.1)
+    else:
+        linspace = torch.linspace(50, 30000, 29950)
+        with torch.no_grad(): loc = model(linspace)
+        ax.plot(linspace.detach().numpy(), loc, color=color, label=label)
+        
+def plot_blank(ax):
+    ax.imshow([[1]], cmap='gray', vmin=0, vmax=1)
+    ax.set_axis_off()
+        
+def format_plot(ax, label):
+    ax.set_xlim([50, 30000])
+    ax.set_ylim([0.5, 1.0])
+    ax.set_xscale('log')
+    ax.set_xlabel('Number of training samples (log-scale)')
+    ax.set_ylabel('{} AUROC'.format(label))
+    
+def print_coverage(model_objects, size, test_auroc):
+    model, *likelihood_objects = model_objects
+    label_map = { models.PowerLaw: 'Power law', models.Arctan: 'Arctan', models.GPPowerLaw: 'GP pow', models.GPArctan: 'GP arc' }
+    label = label_map.get(type(model), 'Unknown') # Default label is 'Unknown' 
+    if label.startswith('GP'):
+        likelihood, = likelihood_objects
+        with torch.no_grad(): predictions = likelihood(model(size*torch.ones(100)))
+        loc = predictions.mean.numpy()
+        scale = predictions.stddev.numpy()
+        lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale)   
+        coverage_95 = metrics.coverage(test_auroc, lower, upper)
+        lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale, 0.1, 0.9)
+        coverage_80 = metrics.coverage(test_auroc, lower, upper)
+        print('{} 80% coverage at {}k: {:.2f}%'.format(label, size//1000, 100*coverage_80))
+        print('{} 95% coverage at {}k: {:.2f}%'.format(label, size//1000, 100*coverage_95))
+        
+def grouped_mean_auroc(df):
+    group_size = 3
+    df['group'] = (df.index // group_size) + 1
+    df = df.groupby('group').test_auroc.agg(lambda x: list(x)).reset_index()
+    test_aurocs = np.array(df.test_auroc.tolist())
+    # _, label, group
+    mean_test_aurocs = np.mean(test_aurocs, axis=1)
+    return mean_test_aurocs
+
+def plot_min_max(ax, size, test_auroc):
+    ax.plot([size, size], [np.min(test_auroc), np.max(test_auroc)], marker='_', color='black')

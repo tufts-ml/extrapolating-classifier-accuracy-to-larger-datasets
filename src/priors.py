@@ -53,25 +53,22 @@ def calc_outputscale_prior(tau_prior, desired_low, desired_high, num_samples=100
     outputscale_samples = outputscale_prior.rvs(num_samples)
     expression_values = 6*np.sqrt(outputscale_samples**2+tau_samples**2)
     return best_m, best_s
-
-class EpsilonPrior(gpytorch.priors.Prior):   
+    
+class UniformPrior(gpytorch.priors.Prior):   
     arg_constraints = {} # Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
-    def __init__(self, min_val, max_val):
-        super(EpsilonPrior, self).__init__()
-        self.min_val = min_val
-        self.max_val = max_val
-        self.slope = (0-(2/abs(self.max_val - self.min_val)))/(self.min_val - self.max_val)
-        self.intercept = -self.slope*self.min_val + 0
+    def __init__(self, a, b):
+        super(UniformPrior, self).__init__()
+        self.a = a
+        self.b = b
         
     def forward(self, x):
-        a = min(self.min_val, self.max_val)
-        b = max(self.min_val, self.max_val)
-        return torch.tensor([self.slope*i+self.intercept if (i >= a and i <= b) else torch.tensor(0) for i in x])
+        return torch.tensor(1/abs(self.a - self.b)) if (x >= self.a and x <= self.b) else torch.tensor(0.0)
         
     def log_prob(self, x):
         return torch.log(self.forward(x))
 
 class TruncatedNormalPrior(gpytorch.priors.Prior):
+    arg_constraints = {} # Please set `arg_constraints = {}` or initialize the distribution with `validate_args=False` to turn off validation.
     def __init__(self, a, b, loc, scale):
         super(TruncatedNormalPrior, self).__init__()
         self.a = a
@@ -85,4 +82,11 @@ class TruncatedNormalPrior(gpytorch.priors.Prior):
         Phi_alpha = 1/2*(1+torch.erf(alpha/np.sqrt(2))) if not self.a == -np.inf else 0
         Phi_beta = 1/2*(1+torch.erf(beta/np.sqrt(2))) if not self.b == np.inf else 1
         log_phi_x = np.log(1/np.sqrt(2*np.pi))+(-1/2*((x-self.loc)/self.scale)**2)
-        return np.log(1/self.scale)+log_phi_x-np.log(Phi_beta-Phi_alpha+1e-15)
+        return np.log(1/self.scale)+log_phi_x-np.log(Phi_beta-Phi_alpha+1e-15) if (x >= self.a and x <= self.b) else -torch.inf    
+    def forward(self, x):
+        alpha = torch.tensor((self.a - self.loc) / self.scale)
+        beta = torch.tensor((self.b - self.loc) / self.scale)
+        Phi_alpha = 1/2*(1+torch.erf(alpha/np.sqrt(2))) if not self.a == -np.inf else 0
+        Phi_beta = 1/2*(1+torch.erf(beta/np.sqrt(2))) if not self.b == np.inf else 1
+        phi_x = (1/np.sqrt(2*np.pi))*np.exp(-1/2*((x-self.loc)/self.scale)**2)
+        return (1/self.scale)*phi_x/(Phi_beta-Phi_alpha+1e-15) if (x >= self.a and x <= self.b) else torch.tensor(0.0)
