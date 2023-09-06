@@ -24,7 +24,7 @@ with torch.no_grad(): predictions = likelihood(model(X_test))
 loc = predictions.mean.numpy()
 scale = predictions.stddev.numpy()
 # Note: If you want to forecast with 20%-80% change lower and upper percentile.
-lower, upper = priors.truncated_normal_uncertainty(0.0, 1.0, loc, scale, lower_percentile=0.025, upper_percentile=0.975) 
+lower, upper = priors.truncated_normal_uncertainty(a=0.0, b=1.0, loc=loc, scale=scale, lower_percentile=0.025, upper_percentile=0.975) 
 ```
 
 ## Reproducing Results
