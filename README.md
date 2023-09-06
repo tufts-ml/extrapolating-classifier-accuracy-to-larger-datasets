@@ -11,11 +11,15 @@
 
 To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data  see `notebooks/demo.ipynb`.
 
+###### Initalizing our Gaussian process
+
 ```python
 likelihood = gpytorch.likelihoods.GaussianLikelihood()
 # Note: If you want to use the Gaussian process with an arctan mean function use models.GPArctan() instead.
 model = models.GPPowerLaw(X_train, y_train, likelihood, epsilon_min=0.05, with_priors=True)
 ```
+
+###### Predicting Classifier Accuracy
 
 ```python
 with torch.no_grad(): predictions = likelihood(model(X_test))
@@ -31,4 +35,4 @@ To reproduce model performance at varying dataset sizes download datasets (see `
 
 To reproduce learning curves with the results presented presented in our paper see `notebooks/figures.ipynb` and `notebooks/tables.ipynb`.
 
-To use the Gaussian process presented in our paper see `notebooks/demo.ipynb`.
+To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data  see `notebooks/demo.ipynb`.
