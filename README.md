@@ -1,7 +1,7 @@
 # extrapolating-classifier-accuracy-to-larger-datasets
 
 ![Figure 1](./motivation.png)
-Figure 1: Example learning curves for predicting infil- tration from chest x-rays assessed using area under the receiver operating characteristic (AUROC). Left: Single “best-fit” using power law (Rosenfeld et al., 2020). Right: Our probabilistic Gaussian process with a power law mean function and 95% confidence interval for uncertainty.
+Figure 1: Example learning curves for predicting infiltration from chest x-rays assessed using area under the receiver operating characteristic (AUROC). Left: Single “best-fit” using power law (Rosenfeld et al., 2020). Right: Our probabilistic Gaussian process with a power law mean function and 95% confidence interval for uncertainty.
 
 ## Table of Contents
 
