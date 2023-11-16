@@ -7,9 +7,9 @@ Figure 1: Example learning curves for predicting infiltration from chest x-rays 
 
 When a large dataset of labeled images is not available, research projects often have a common trajectory:
 
-(1) gather a small "pilot" dataset of images and corresponding class labels,
-(2) train classifiers using this available data, and then
-(3) plan to collect an even larger dataset to further improve performance
+  (1) gather a small "pilot" dataset of images and corresponding class labels,
+  (2) train classifiers using this available data, and then
+  (3) plan to collect an even larger dataset to further improve performance
 
 When gathering more labeled data is expensive, practitioners face a key decision in step 3: *given that the classifier’s accuracy is y% at the current size x, how much better might the model do at 2x, 10x, or 50x images?*
 
