@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 if __name__=='__main__':
-    parser = argparse.ArgumentParser(description='label_Breast_Ultrasound_Dataset.py')
+    parser = argparse.ArgumentParser(description='label_BUSI.py')
     parser.add_argument('--directory', type=str, help='Directory where encoded images are saved', required=True)
     args = parser.parse_args()
     file_index = 0

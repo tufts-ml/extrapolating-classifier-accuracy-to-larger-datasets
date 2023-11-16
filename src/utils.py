@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import torch
@@ -11,14 +12,14 @@ import metrics
 import models
 import priors
 
+def makedir_if_not_exist(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
 def load_experiment(path):
     df = pd.read_csv(path, index_col='Unnamed: 0')
-    df.train_BA = df.train_BA.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
-    df.train_auroc = df.train_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
-    df.val_BA = df.val_BA.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
-    df.val_auroc = df.val_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
-    df.test_BA = df.test_BA.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
-    df.test_auroc = df.test_auroc.apply(lambda string: np.fromstring(string[1:-1], sep=' '))
+    for column in ['train_BA', 'train_auroc', 'val_BA', 'val_auroc', 'test_BA', 'test_auroc']:
+        df[column] = df[column].apply(lambda item: np.fromstring(item[1:-1], sep=' '))
     return df
 
 def split_df(df, index):
@@ -34,19 +35,23 @@ def load_dataset(df):
     return X, y
 
 class EncodedDataset(Dataset):
-    def __init__(self, df):
+    def __init__(self, df, max_slices=50):
+        self.max_slices = max_slices
         self.path = df.path.to_list()
+        self.image = [self.transform(torch.load(path, map_location='cpu').float().detach().numpy()) for path in self.path]
         self.label = df.label.to_list()
         
     def __len__(self):
         return len(self.path)
 
     def __getitem__(self, index):
-        image = torch.load(self.path[index], map_location='cpu').float().detach().numpy()
-        slices = min(50, image.shape[0])
+        return self.image[index], self.label[index]
+    
+    def transform(self, image):
+        slices = min(self.max_slices, image.shape[0])
         linspace = np.linspace(start=0, stop=image.shape[0]-1, num=slices, dtype=int)
-        return image[linspace], self.label[index]
-
+        return image[linspace]
+        
 def collate_fn(batch):
     images, labels = zip(*batch)
     images = np.concatenate(images, axis=0)
@@ -70,6 +75,7 @@ def train_one_epoch(model, device, optimizer, loss_func, data_loader, args=None)
         optimizer.zero_grad()
         outputs = model(inputs, slices)
         loss = (1/np.log(2))*(len(slices)/len(data_loader.dataset))*loss_func(outputs, labels)
+        #loss = (1/np.log(2))*(len(slices)/len(data_loader.dataset))*loss_func(outputs, labels, model)
         loss.backward()
 
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
@@ -100,6 +106,7 @@ def evaluate(model, device, loss_func, data_loader):
 
             outputs = model(inputs, slices)
             loss = (1/np.log(2))*(len(slices)/len(data_loader.dataset))*loss_func(outputs, labels)
+            #loss = (1/np.log(2))*(len(slices)/len(data_loader.dataset))*loss_func(outputs, labels, model)
 
             if device.type == 'cuda':
                 loss = loss.cpu()
@@ -167,7 +174,7 @@ def load_model(name, path, X_train, y_train):
 
 def plot_model(ax, model_objects, color='black'):
     model, *likelihood_objects = model_objects
-    label_map = { models.PowerLaw: 'Power law', models.Arctan: 'Arctan', models.GPPowerLaw: 'GP pow', models.GPArctan: 'GP arc' }
+    label_map = { models.PowerLaw: 'Power law', models.Arctan: 'Arctan', models.GPPowerLaw: 'GP pow (ours)', models.GPArctan: 'GP arc (ours)' }
     label = label_map.get(type(model), 'Unknown') # Default label is 'Unknown' 
     if label.startswith('GP'):
         likelihood, = likelihood_objects

@@ -12,22 +12,26 @@ from utils import *
 if __name__=='__main__':
     
     experiments_path = '/cluster/home/eharve06/extrapolating-classifier-accuracy-to-bigger-datasets/experiments'
-    models_path = os.path.join(os.path.dirname(experiments_path), 'models_extra')
+    models_path = os.path.join(os.path.dirname(experiments_path), 'models')
     datasets = [('ChestX-ray14', 'ChestX-ray14_short_range.csv'),
                 ('Chest_X-Ray', 'Chest_X-Ray_short_range.csv'),
                 ('BUSI', 'BUSI_short_range.csv'),
                 ('TMED-2', 'TMED-2_short_range.csv'),
                 ('OASIS-3', 'OASIS-3_short_range.csv'),
                 ('Pilot', 'Pilot_short_range.csv')]
+    datasets = [('OASIS-3', 'OASIS-3_short_range.csv'),
+                ('Pilot', 'Pilot_short_range.csv')]
     models = [('PowerLaw', train_PowerLaw), 
               ('Arctan', train_Arctan), 
               ('GPPowerLaw', train_GPPowerLaw), 
               ('GPArctan', train_GPArctan)]
     labels = [['Atelectasis', 'Effusion', 'Infiltration'],
-              ['Bacteria', 'Virus'],
+              ['Bacterial', 'Viral'],
               ['Normal', 'Benign', 'Malignant'],
               ['PLAX', 'PSAX', 'A4C', 'A2C'],
               ['Alzheimer’s'],
+              ['WMD', 'CBI']]
+    labels = [['Alzheimer’s'],
               ['WMD', 'CBI']]
     
     for datasets_index, (dataset_name, filename) in enumerate(datasets):
@@ -41,6 +45,7 @@ if __name__=='__main__':
             # Split data
             X_train, y_train, X_test, y_test = split_df(df, index=label_index)
             for model_name, training_func in models:
+                print(model_name)
                 func_results = training_func(X_train, y_train)
                 if len(func_results) == 2: model, losses = func_results
                 else: likelihood, model, losses = func_results

@@ -1,13 +1,14 @@
-# extrapolating-classifier-accuracy-to-bigger-datasets
+# extrapolating-classifier-accuracy-to-larger-datasets
 
 ## Table of Contents
 
-- [Predicting Classifier Accuracy](#predicting-classifier-accuracy)
+- [Extrapolating Classifier Accuracy](#extrapolating-classifier-accuracy)
+- [Citation](#citation)
 - [Reproducing Results](#reproducing-results)
 
-## Predicting Classifier Accuracy
+## Extrapolating Classifier Accuracy
 
-To use our Gaussian process to predict classifier accuracy on larger datasets given small pilot data see `notebooks/demo.ipynb`.
+To use our Gaussian process to extrapolate classifier accuracy to larger datasets see `notebooks/demo.ipynb`.
 
 ##### Initializing our Gaussian process
 
@@ -25,6 +26,17 @@ loc = predictions.mean.numpy()
 scale = predictions.stddev.numpy()
 # Note: If you want to forecast with 20%-80% change lower and upper percentile.
 lower, upper = priors.truncated_normal_uncertainty(a=0.0, b=1.0, loc=loc, scale=scale, lower_percentile=0.025, upper_percentile=0.975) 
+```
+
+## Citation
+
+```bibtex
+@inproceedings{harvey2023probabilistic,
+  author={Harvey, Ethan and Chen, Wansu and Kent, David M. and Hughes, Michael C.},
+  title={A Probabilistic Method to Predict Classifier Accuracy on Larger Datasets given Small Pilot Data},
+  booktitle={Machine Learning for Health},
+  year={2023}
+}
 ```
 
 ## Reproducing Results

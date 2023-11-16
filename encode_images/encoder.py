@@ -1,9 +1,10 @@
+import re
+import numpy as np
 import torch
 import torch.nn as nn
 import torchvision
 from torchvision.io import read_image
-import re
-import numpy as np
+# Importing neuroimaging packages
 import nibabel as nib
 
 class Identity(nn.Module):
@@ -23,8 +24,10 @@ def init_encoder():
     model.eval()
     return model
 
-def encode_image(model, path, device, grayscale=True, image_size=(224, 224)):
-    # ViT mean and std for normalizing see https://pytorch.org/vision/main/models/vision_transformer.html
+def encode_image(model, path, grayscale=True, image_size=(224, 224)):
+    model_device = next(model.parameters()).device
+    device = torch.device(model_device)
+    # Default from https://pytorch.org/vision/main/models/vision_transformer.html
     mean = torch.tensor([[[0.485]], [[0.456]], [[0.406]]])
     std = torch.tensor([[[0.229]], [[0.224]], [[0.225]]])
     # Read image
@@ -44,9 +47,9 @@ def encode_image(model, path, device, grayscale=True, image_size=(224, 224)):
     image = ((image/255)-mean)/std
     # Encode image
     with torch.no_grad():
-        if device.type == "cuda": image = image.to(device)
+        if device.type == 'cuda': image = image.to(device)
         encoded_image = model(image[None, :, :, :])
-        if device.type == "cuda": encoded_image = encoded_image.cpu()
+        if device.type == 'cuda': encoded_image = encoded_image.cpu()
     return encoded_image
 
 def strip_skull(image, minimum, maximum):
@@ -54,8 +57,10 @@ def strip_skull(image, minimum, maximum):
     image[image > maximum] = maximum
     return image
 
-def encode_scan(model, device, path, image_size=(224, 224)):
-    # ViT mean and std for normalizing see https://pytorch.org/vision/main/models/vision_transformer.html
+def encode_scan(model, path, image_size=(224, 224)):
+    model_device = next(model.parameters()).device
+    device = torch.device(model_device)
+    # Default from https://pytorch.org/vision/main/models/vision_transformer.html
     mean = torch.tensor([[[0.485]], [[0.456]], [[0.406]]])
     std = torch.tensor([[[0.229]], [[0.224]], [[0.225]]])
     # Read image
@@ -75,7 +80,7 @@ def encode_scan(model, device, path, image_size=(224, 224)):
     image = ((image)-mean)/std
     # Encode image
     with torch.no_grad():
-        if device.type == "cuda": image = image.to(device)
+        if device.type == 'cuda': image = image.to(device)
         encoded_image = model(image)
-        if device.type == "cuda": encoded_image = encoded_image.cpu()
+        if device.type == 'cuda': encoded_image = encoded_image.cpu()
     return encoded_image

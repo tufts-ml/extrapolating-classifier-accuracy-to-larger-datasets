@@ -121,6 +121,46 @@ class GPArctan(gpytorch.models.ExactGP):
         mean_x = self.mean_module(x)
         covar_x = self.covar_module(torch.log10(x))
         return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
+    
+def train_best_fit(model, X_train, y_train, max_iters=1000, lr=0.01):
+    model.train()
+    losses = np.zeros(max_iters)
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    loss_func = nn.MSELoss()
+    for i in range(max_iters):
+        if device.type == 'cuda': X_train, y_train = X_train.to(device), y_train.to(device)
+        optimizer.zero_grad()
+        output = model(X_train)
+        loss = loss_func(output, y_train)
+        loss.backward()
+        optimizer.step()
+        if device.type == 'cuda': loss = loss.cpu()
+        losses[i] = loss
+    if device.type == 'cuda': model.to('cpu')
+    model.eval()
+    return model, losses
+    
+def train_gp(likelihood, model, X_train, y_train, max_iters=1000, lr=0.01):
+    likelihood.train()
+    model.train()
+    losses = np.zeros(max_iters)
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model)
+    for i in range(max_iters):
+        if device.type == 'cuda': X_train, y_train = X_train.to(device), y_train.to(device)
+        optimizer.zero_grad()
+        output = model(X_train)
+        loss = -mll(output, y_train)
+        loss.backward()
+        optimizer.step() 
+        if device.type == 'cuda': loss = loss.cpu()
+        losses[i] = loss
+    if device.type == 'cuda': model.to('cpu')
+    model.eval()
+    likelihood.eval()
+    return likelihood, model, losses
 
 def train_PowerLaw(X, y, lr=0.001, training_iter=100000):
     losses = np.zeros(training_iter)
