@@ -1,6 +1,6 @@
 # extrapolating-classifier-accuracy-to-larger-datasets
 
-[Link to paper](https://github.com/tufts-ml/extrapolating-classifier-accuracy-to-larger-datasets)
+[A Probabilistic Method to Predict Classifier Accuracy on Larger Datasets given Small Pilot Data](https://github.com/tufts-ml/extrapolating-classifier-accuracy-to-larger-datasets) by Ethan Harvey, Wansu Chen, David M. Kent, and Michael C. Hughes
 
 ![Figure 1](./motivation.png)
 Figure 1: Example learning curves for predicting infiltration from chest x-rays assessed using area under the receiver operating characteristic (AUROC). Left: Single "best-fit" using power law (Rosenfeld et al., 2020). Right: Our probabilistic Gaussian process with a power law mean function and 95% confidence interval for uncertainty.
