@@ -1,9 +1,11 @@
 # extrapolating-classifier-accuracy-to-larger-datasets
 
+[Link to paper](https://github.com/tufts-ml/extrapolating-classifier-accuracy-to-larger-datasets)
+
 ![Figure 1](./motivation.png)
 Figure 1: Example learning curves for predicting infiltration from chest x-rays assessed using area under the receiver operating characteristic (AUROC). Left: Single "best-fit" using power law (Rosenfeld et al., 2020). Right: Our probabilistic Gaussian process with a power law mean function and 95% confidence interval for uncertainty.
 
-## Summary
+## Problem Statement
 
 When a large dataset of labeled images is not available, research projects often have a common trajectory:
 
@@ -14,6 +16,8 @@ When a large dataset of labeled images is not available, research projects often
 (3) plan to collect an even larger dataset to further improve performance
 
 When gathering more labeled data is expensive, practitioners face a key decision in step 3: *given that the classifier’s accuracy is y% at the current size x, how much better might the model do at 2x, 10x, or 50x images?*
+
+## Our Contributions
 
 ## Extrapolating Classifier Accuracy
 
