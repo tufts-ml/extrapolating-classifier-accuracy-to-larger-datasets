@@ -19,7 +19,13 @@ When gathering more labeled data is expensive, practitioners face a key decision
 
 ## Our Contributions
 
-## Extrapolating Classifier Accuracy
+Our contributions are:
+
+(1) a reusable GP-based accuracy probabilistic extrapolator (APEx-GP) that can match existing curve-fitting approaches in terms of error while providing additional uncertainty estimates, and 
+
+(2) a careful assessment of our proposed probabilistic extrapolations compared to ground truth on larger datasets across six medical classification tasks involving both 2D and 3D images across diverse modalities (x-ray, ultrasound, and CT) with various sample sizes.
+
+## Using Our Method
 
 To use our Gaussian process to extrapolate classifier accuracy to larger datasets see `notebooks/demo.ipynb`.
 
