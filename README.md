@@ -37,7 +37,7 @@ likelihood = gpytorch.likelihoods.GaussianLikelihood()
 model = models.GPPowerLaw(X_train, y_train, likelihood, epsilon_min=0.05, with_priors=True)
 ```
 
-### Extrapolating Classifier Accuracy
+### Extrapolating classifier accuracy
 
 ```python
 with torch.no_grad(): predictions = likelihood(model(X_test))
