@@ -29,7 +29,7 @@ Our contributions are:
 
 To use our Gaussian process to extrapolate classifier accuracy to larger datasets see `notebooks/demo.ipynb`.
 
-##### Initializing our Gaussian process
+### Initializing our Gaussian process
 
 ```python
 likelihood = gpytorch.likelihoods.GaussianLikelihood()
@@ -37,7 +37,7 @@ likelihood = gpytorch.likelihoods.GaussianLikelihood()
 model = models.GPPowerLaw(X_train, y_train, likelihood, epsilon_min=0.05, with_priors=True)
 ```
 
-##### Extrapolating Classifier Accuracy
+### Extrapolating Classifier Accuracy
 
 ```python
 with torch.no_grad(): predictions = likelihood(model(X_test))
