@@ -53,7 +53,7 @@ lower, upper = priors.truncated_normal_uncertainty(a=0.0, b=1.0, loc=loc, scale=
 @inproceedings{harvey2023probabilistic,
   author={Harvey, Ethan and Chen, Wansu and Kent, David M. and Hughes, Michael C.},
   title={A Probabilistic Method to Predict Classifier Accuracy on Larger Datasets given Small Pilot Data},
-  booktitle={Proceedings of the 3rd Machine Learning for Health Symposium},
+  booktitle={Machine Learning for Health (ML4H)},
   year={2023}
 }
 ```
