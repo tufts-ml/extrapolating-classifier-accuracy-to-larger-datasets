@@ -5,7 +5,7 @@
 ![Figure 1](./motivation.png)
 Figure 1: Example learning curves for predicting infiltration from chest x-rays assessed using area under the receiver operating characteristic (AUROC). Left: Single "best-fit" using power law (Rosenfeld et al., 2020). Right: Our probabilistic Gaussian process with a power law mean function and 95% confidence interval for uncertainty.
 
-## Problem Statement
+## Problem statement
 
 When a large dataset of labeled images is not available, research projects often have a common trajectory:
 
@@ -17,7 +17,7 @@ When a large dataset of labeled images is not available, research projects often
 
 When gathering more labeled data is expensive, practitioners face a key decision in step 3: *given that the classifier’s accuracy is y% at the current size x, how much better might the model do at 2x, 10x, or 50x images?*
 
-## Our Contributions
+## Our contributions
 
 Our contributions are:
 
@@ -25,7 +25,7 @@ Our contributions are:
 
 (2) a careful assessment of our proposed probabilistic extrapolations compared to ground truth on larger datasets across six medical classification tasks involving both 2D and 3D images across diverse modalities (x-ray, ultrasound, and CT) with various sample sizes.
 
-## Using Our Method
+## Using our method
 
 To use our Gaussian process to extrapolate classifier accuracy to larger datasets see `notebooks/demo.ipynb`.
 
@@ -58,7 +58,7 @@ lower, upper = priors.truncated_normal_uncertainty(a=0.0, b=1.0, loc=loc, scale=
 }
 ```
 
-## Reproducing Results
+## Reproducing results
 
 To reproduce model performance at varying dataset sizes 1) download datasets (see `encode_images/README.md` and `label_images/README.md` for more details) and 2) fit classifiers to each dataset (see `src/finetune_2D.py` and `src/finetune_3D.py`). The results from our paper are saved in `experiments/`.
 
